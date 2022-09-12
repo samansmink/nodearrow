@@ -12,7 +12,6 @@
 #include "include/arrow_parquet_read.hpp"
 
 namespace nodearrow {
-    // TODO we should probably have a separate step that creates this writer
     static Napi::Value ArrayToIpc(const Napi::CallbackInfo &info) {
 
         auto env = info.Env();
@@ -28,26 +27,22 @@ namespace nodearrow {
         if (!schema.ok()) {
             std::cout << "Schema not ok\n";
             return env.Null();
-            // TODO complain
         }
         auto batch = arrow::ImportRecordBatch(carray, *schema);
 
         if (!batch.ok()) {
-            // TODO complain
             std::cout << "Batch not ok\n";
             return env.Null();
         }
 
         auto output_stream = arrow::io::BufferOutputStream::Create();
         if (!output_stream.ok()) {
-            // TODO complain
             std::cout << "BufferOutputStream not ok\n";
             return env.Null();
         }
         auto batch_writer = arrow::ipc::MakeStreamWriter(*output_stream, *schema);
 
         if (!batch_writer.ok()) {
-            // TODO complain
             std::cout << "MakeStreamWriter not ok\n";
             return env.Null();
         }
@@ -55,7 +50,6 @@ namespace nodearrow {
         auto status = (*batch_writer)->WriteRecordBatch(**batch);
 
         if (!status.ok()) {
-            // TODO complain
             std::cout << "WriteRecordBatch not ok\n";
             return env.Null();
         }
@@ -63,12 +57,11 @@ namespace nodearrow {
         auto buffer = (*output_stream)->Finish();
 
         if (!buffer.ok()) {
-            // TODO complain
             std::cout << "Buffer not ok\n";
             return env.Null();
         }
 
-        // TODO take over buffer ownership and dont copy
+        // TODO take over buffer ownership and dont copy:
 //       auto buf = Napi::ArrayBuffer::New(env, (void *) (*buffer)->address(), (*buffer)->size());
 
         auto buf = Napi::ArrayBuffer::New(env, (*buffer)->size());
@@ -91,14 +84,12 @@ namespace nodearrow {
 
         auto output_stream = arrow::io::BufferOutputStream::Create();
         if (!output_stream.ok()) {
-            // TODO complain
             std::cout << "BufferOutputStream not ok\n";
             return env.Null();
         }
         auto batch_writer = arrow::ipc::MakeStreamWriter(*output_stream, arrow_table->schema());
 
         if (!batch_writer.ok()) {
-            // TODO complain
             std::cout << "MakeStreamWriter not ok\n";
             return env.Null();
         }
@@ -106,7 +97,6 @@ namespace nodearrow {
         auto status = (*batch_writer)->WriteTable(*arrow_table);
 
         if (!status.ok()) {
-            // TODO complain
             std::cout << "WriteTable not ok\n";
             return env.Null();
         }
@@ -114,7 +104,6 @@ namespace nodearrow {
         auto buffer = (*output_stream)->Finish();
 
         if (!buffer.ok()) {
-            // TODO complain
             std::cout << "Buffer not ok\n";
             return env.Null();
         }
