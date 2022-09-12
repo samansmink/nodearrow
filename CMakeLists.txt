@@ -3,6 +3,6 @@
 project(nodearrow)
 cmake_minimum_required(VERSION 3.22)
 
-include_directories(/opt/homebrew/Cellar/apache-arrow/9.0.0_1/include /Users/hannes/Library/Caches/node-gyp/18.8.0/include/node /Users/hannes/source/nodearrow/node_modules/node-addon-api)
+include_directories(/opt/homebrew/Cellar/apache-arrow/9.0.0_1/include)
 
-add_library(nodearrow src/nodearrow.cpp)
+add_library(nodearrow src/arrow_parquet_read.cpp src/nodearrow.cpp)
