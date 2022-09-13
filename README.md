@@ -1,0 +1,1 @@
+To compile, make sure arrow is installed then set the ARROW_PATH env variable.

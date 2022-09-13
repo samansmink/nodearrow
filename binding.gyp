@@ -3,11 +3,12 @@
         {
             "target_name": "<(module_name)",
             "sources": [
-                "src/nodearrow.cpp"
+                "src/nodearrow.cpp",
+                "src/arrow_parquet_read.cpp"
             ],
             "include_dirs": [
                 "<!@(node -p \"require('node-addon-api').include\")",
-                '$(ARROW_INCLUDE)'
+                '$(ARROW_PATH)/include',
             ],
             'defines': [
                 'NAPI_DISABLE_CPP_EXCEPTIONS=1',
@@ -59,7 +60,8 @@
             #     ],  # OS=="win"
             # ],  # conditions
             "libraries": [
-                '$(ARROW_STATIC_LIB)'
+                '$(ARROW_PATH)/lib/libarrow.dylib',
+                '$(ARROW_PATH)/lib/libarrow_dataset.dylib'
             ]
 
         },
