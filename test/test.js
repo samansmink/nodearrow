@@ -86,54 +86,53 @@ describe('[Benchmark] Single INT column', async () => {
 	});
 });
 
-describe('[Benchmark] TPCH SF1 lineitem into arrow IPC format', async () => {
-	// Config
-	const batch_size = vector_size*100;
-	const expected_rows = 60175;
-	const parquet_file_path = "/tmp/lineitem_sf0_01.parquet";
-	// const expected_rows = 6001215;
-	// const parquet_file_path = "/tmp/lineitem_sf1.parquet";
-
-	let db;
-	let conn;
-
-	before((done) => {
-		db = new duckdb.Database(':memory:', () => {
-			conn = new duckdb.Connection(db, done);
-		});
-	});
-
-	it('DuckDB + IPC conversion (batch_size=' + batch_size + ')', async () => {
-		const batches = [];
-		let got_rows = 0;
-
-		const queryResult = await conn.arrowStream('SELECT * FROM "' + parquet_file_path + '";');
-
-		while(true) {
-			let arrowArrayCData = await queryResult.nextRecordBatch(batch_size);
-			if (!arrowArrayCData) {
-				break;
-			}
-			cDataPointers = arrowArrayCData.GetCDataPointers();
-			ipc = nodearrow.arraytoipc(cDataPointers.data, cDataPointers.schema)
-			reader = arrow.RecordBatchReader.from(ipc);
-			batch = reader.readAll()[0];
-			batches.push(batch)
-			got_rows += batch.data.length;
-		}
-		assert.equal(got_rows, expected_rows);
-	});
-
-	it('Arrow Parquet reader + IPC conversion', async () => {
-		const batches = [];
-		let total_size = 0;
-		ipc = nodearrow.parquettoipc('file://' + parquet_file_path);
-		reader = arrow.RecordBatchReader.from(ipc);
-		for await (const batch of reader) {
-			batches.push(batch);
-			total_size += batch.data.length;
-		}
-		assert.equal(total_size, expected_rows);
-	});
-
-});
+// describe('[Benchmark] TPCH SF1 lineitem into arrow IPC format', async () => {
+// 	// Config
+// 	const batch_size = vector_size*100;
+// 	const expected_rows = 60175;
+// 	const parquet_file_path = "/tmp/lineitem_sf0_01.parquet";
+// 	// const expected_rows = 6001215;
+// 	// const parquet_file_path = "/tmp/lineitem_sf1.parquet";
+//
+// 	let db;
+// 	let conn;
+//
+// 	before((done) => {
+// 		db = new duckdb.Database(':memory:', () => {
+// 			conn = new duckdb.Connection(db, done);
+// 		});
+// 	});
+//
+// 	it('DuckDB + IPC conversion (batch_size=' + batch_size + ')', async () => {
+// 		const batches = [];
+// 		let got_rows = 0;
+//
+// 		const queryResult = await conn.arrowStream('SELECT * FROM "' + parquet_file_path + '";');
+//
+// 		while(true) {
+// 			let arrowArrayCData = await queryResult.nextRecordBatch(batch_size);
+// 			if (!arrowArrayCData) {
+// 				break;
+// 			}
+// 			cDataPointers = arrowArrayCData.GetCDataPointers();
+// 			ipc = nodearrow.arraytoipc(cDataPointers.data, cDataPointers.schema)
+// 			reader = arrow.RecordBatchReader.from(ipc);
+// 			batch = reader.readAll()[0];
+// 			batches.push(batch)
+// 			got_rows += batch.data.length;
+// 		}
+// 		assert.equal(got_rows, expected_rows);
+// 	});
+//
+// 	it('Arrow Parquet reader + IPC conversion', async () => {
+// 		const batches = [];
+// 		let total_size = 0;
+// 		ipc = nodearrow.parquettoipc('file://' + parquet_file_path);
+// 		reader = arrow.RecordBatchReader.from(ipc);
+// 		for await (const batch of reader) {
+// 			batches.push(batch);
+// 			total_size += batch.data.length;
+// 		}
+// 		assert.equal(total_size, expected_rows);
+// 	});
+// });
